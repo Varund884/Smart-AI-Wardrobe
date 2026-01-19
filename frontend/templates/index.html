@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Wardrobe AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="processing-container">
+            <div class="emoji-carousel">
+                <span class="emoji-item" id="processingEmoji">👕</span>
+            </div>
+            <div class="status-text" id="statusText">Processing your wardrobe...</div>
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <!-- Location Screen -->
+    <div class="screen active" id="locationScreen">
+        <div class="header">
+            <h1 class="logo">Smart Wardrobe AI</h1>
+            <p class="subtitle">Your intelligent outfit companion</p>
+            <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+        </div>
+
+        <div class="main-container">
+            <div class="weather-card">
+                <span class="weather-emoji" id="weatherEmoji">🌤️</span>
+                <div class="weather-temp" id="weatherTemp">--°C</div>
+                <div class="weather-location" id="weatherLocation">Detecting location...</div>
+                <div class="weather-condition" id="weatherCondition"></div>
+                
+                <!-- Weather -->
+                <div class="weather-details">
+                    <div class="weather-detail-item">
+                        <span class="detail-icon">💧</span>
+                        <span class="detail-label">Precipitation</span>
+                        <span class="detail-value" id="weatherPrecipitation">--</span>
+                    </div>
+
+                    <div class="weather-detail-item">
+                        <span class="detail-icon">💨</span>
+                        <span class="detail-label">Wind Speed</span>
+                        <span class="detail-value" id="weatherWind">-- km/h</span>
+                    </div>
+                </div>
+
+                <!-- Formality options -->
+                <div class="formality-selector">
+                    <label for="formalitySelect">Event Formality</label>
+                    <select id="formalitySelect">
+                        <option value="casual">Casual</option>
+                        <option value="smart-casual">Smart Casual</option>
+                        <option value="formal">Formal</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Recommendations Screen -->
+            <div class="recommendation-preview" id="recommendationPreview">
+                <h2>✨ Today's Outfit ✨</h2>
+                <p>Upload clothes to see recommendations!</p>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn" onclick="goToUpload()">Build Your Wardrobe</button>
+            <button class="btn btn-secondary" onclick="goToResults()">View your Wardrobe</button>
+        </div>
+    </div>
+
+    <!-- Upload Screen -->
+    <div class="screen" id="uploadScreen">
+        <div class="header">
+            <h1 class="logo">Upload Your Clothes</h1>
+            <p class="subtitle">Drag & drop or click to select images</p>
+            <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+        </div>
+
+        <div class="upload-zone" id="uploadZone">
+            <div class="upload-icon">📸</div>
+            <h3>Drop images here or click to browse</h3>
+            <p class="upload-hint">Support for JPG, PNG, WEBP</p>
+            <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
+            <div class="file-preview" id="filePreview"></div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn" id="uploadBtn" onclick="uploadImages()" disabled>Upload Images</button>
+            <button class="btn btn-secondary" onclick="goToLocation()">Back</button>
+        </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div class="screen" id="resultsScreen">
+        <div class="header">
+            <h1 class="logo">Your Smart Wardrobe</h1>
+            <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+        </div>
+
+        <!-- Main info Screen -->
+        <div class="main-container">
+            <div class="weather-card">
+                <span class="weather-emoji" id="resultWeatherEmoji">🌤️</span>
+                <div class="weather-temp" id="resultWeatherTemp">--°C</div>
+                <div class="weather-location" id="resultWeatherLocation">--</div>
+                
+                <div class="weather-details">
+                    <div class="weather-detail-item">
+                        <span class="detail-icon">💧</span>
+                        <span class="detail-label">Precipitation</span>
+                        <span class="detail-value" id="resultWeatherPrecipitation">--</span>
+                    </div>
+                <div class="weather-detail-item">
+                    <span class="detail-icon">💨</span>
+                        <span class="detail-label">Wind Speed</span>
+                        <span class="detail-value" id="resultWeatherWind">-- km/h</span>
+                    </div>
+                </div>
+
+                <div class="formality-selector">
+                    <label for="formalitySelectResults">Event Formality</label>
+                    <select id="formalitySelectResults">
+                        <option value="casual">Casual</option>
+                        <option value="smart-casual">Smart Casual</option>
+                        <option value="formal">Formal</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Outfit Recommendation -->
+            <div class="recommendation-section" id="recommendationSection" style="display: none;">
+                <div class="recommendation-header">
+                    <div class="recommendation-title">✨ Today's Outfit ✨</div>
+                    <div class="outfit-controls">
+                        <button class="btn-outfit" onclick="regenerateOutfit()" id="alternativeBtn">🔄 Another</button>
+                        <button class="btn-outfit" onclick="resetToMainOutfit()">⭐ Main</button>
+                    </div>
+                    <div class="alternative-indicator" id="alternativeIndicator" style="display: none;"></div>
+                </div>
+                <div class="outfit-collage" id="outfitCollage"></div>
+                <div class="outfit-reasoning" id="outfitReasoning"></div>
+            </div>
+        </div>
+
+        <div class="wardrobe-stats" id="wardrobeStats"></div>
+
+        <!-- Analytics Dashboard -->
+        <div class="analytics-dashboard" id="analyticsDashboard" style="display: none;">
+            <div class="dashboard-header">
+                <h2>📊 Wardrobe Analytics</h2>
+                <button class="btn-close-dashboard" onclick="closeDashboard()">✕</button>
+            </div>
+            <div class="dashboard-content" id="dashboardContent"></div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-analytics" onclick="showAnalytics()">📊 View Analytics Dashboard</button>
+        </div>
+
+        <div class="garment-grid" id="garmentGrid"></div>
+
+        <div class="btn-group">
+            <button class="btn" onclick="goToUpload()">Add More Clothes</button>
+            <button class="btn btn-secondary" onclick="goToLocation()">Home</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    
+</body>
+</html>
