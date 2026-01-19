@@ -25,6 +25,8 @@ Visualize your closet breakdown by season, color family, and formality level.
 Instantly generate alternative valid outfits if you don't like the suggestion.
 
 ---
+![image alt](https://github.com/Varund884/Smart-AI-Wardrobe/blob/724e1d8716bf4b8fa6aeadbd7a23526b3fcca8e7/mainscreen.jpg)
+---
 
 ## 🛠 Tech Stack
 
@@ -104,3 +106,4 @@ Choose between Casual, Smart-Casual, or Formal
 ---
 
 ⭐ Star this repo if you find it helpful!
+
