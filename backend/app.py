@@ -272,6 +272,4 @@ def delete_garment_endpoint(garment_id):
     return jsonify({"success": True, "message": f"Garment {garment_id} deleted successfully"})
 
 if __name__ == "__main__":
-    import os
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=False)
+    app.run(debug=True)
